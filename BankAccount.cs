@@ -15,7 +15,7 @@ namespace BankAccount
         private static int _accountNumberGenerator = 100;
         public BankAccount(string accountHolderName, double initBalance)
         {
-            var result = BankAccountValidator.ValidateBalance(initBalance);
+            var result = BankAccountValidator.ValidateInputs(accountHolderName, initBalance);
             if (!result.IsValid)
             {
                 Console.WriteLine(result.Message);
@@ -30,21 +30,34 @@ namespace BankAccount
         // Properties 
 
         // It is readonly because we want to don't customer to set account number
-        public string AccountNumber { get; }
+        public string AccountNumber { get; private set; }
         public string AccountHolderName { get; set; }
         // It is private because a customer can't set to balance with manually from out of class
         public double Balance { get; private set; }
 
         // Methods
-        public void Deposit(double amount)
+        public ResponseCenter Deposit(double amount)
         {
+            Balance += amount;
+            return ResponseCenter.Success($"Your deposit is successfully and you balance account now is: {Balance}");
         }
 
-        public void Withdraw(double amount)
+        public ResponseCenter Withdraw(double amount)
         {
-
+            if (Balance > amount)
+            {
+                Balance -= amount;
+                return ResponseCenter.Success($"Your balance is now: {Balance}");
+            }
+            else
+            {
+                return ResponseCenter.Fail("Account balance is not enough.");
+            }
         }
 
-        public void CheckBalance() { }
+        public ResponseCenter CheckBalance()
+        {
+            return ResponseCenter.Success($"Your balance is: {Balance}");
+        }
     }
 }
