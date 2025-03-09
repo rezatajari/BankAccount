@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BankAccount.Logic
+namespace BankAccount.Service
 {
     public class CustomerService
     {
-        public static Customer GetCustomerInformation()
+        public Customer CreateCustomerInformation()
         {
             Console.WriteLine("Please enter your information:\n");
             var name = GetCustomerName();

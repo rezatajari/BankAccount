@@ -13,9 +13,9 @@ namespace BankAccount
     public class AmountValidation
     {
         // Validation for check doesn't negative input
-        public static ResponseCenter IsValidAmount(double amount)
+        public static ResponseCenter<bool> IsValidAmount(double amount)
         {
-            return amount < 0 ? ResponseCenter.Fail("Bank account amount must be positive") : ResponseCenter.Success();
+            return amount < 0 ? ResponseCenter<bool>.Fail("Bank account amount must be positive") : ResponseCenter<bool>.Success();
         }
 
     }

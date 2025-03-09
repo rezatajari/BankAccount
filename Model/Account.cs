@@ -10,6 +10,7 @@ namespace BankAccount.Model
     {
         // For unique account number generator
         private static int _accountNumberGenerator = 100;
+        private static int _idGen = 100;
         private const string BankBrandName = "AccountBankOfAmerican";
 
         public Account(int customerId, string customerName, double initBalance)
@@ -25,13 +26,17 @@ namespace BankAccount.Model
             AccountNumber = "BankCenter: " + _accountNumberGenerator++;
             Balance = initBalance;
             CustomerId = customerId;
+            Id = _idGen++;
+
         }
 
+        public int Id { get; set; }
         public int CustomerId { get; set; }
         public string AccountNumber { get; private set; }
         public string AccountHolderName { get; private set; }
         // It is private because a customer can't set to balance with manually from out of class
         public double Balance { get; set; }
 
+        public ICollection<Transaction> Transactions { get; set; }
     }
 }

@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BankAccount
 {
-    public class ResponseCenter
+    public class ResponseCenter<T>
     {
-        public bool IsValid{ get;private set; }
+        public bool IsValid { get; private set; }
         public string Message { get; private set; }
-
-        private ResponseCenter(bool isValid,string message)
+        public T Data { get; set; }
+        private ResponseCenter(bool isValid, string message,T data=default)
         {
             IsValid = isValid;
             Message = message;
+            Data = data;
         }
 
 
-        public static ResponseCenter Success(string message = "Operation successful")
-            => new ResponseCenter(isValid:true, message);
+        public static ResponseCenter<T> Success(string message = "Operation successful", T data = default)
+            => new ResponseCenter<T>(isValid: true, message,data);
 
-        public static ResponseCenter Fail(string message)
-            => new ResponseCenter(isValid:false, message);
+        public static ResponseCenter<T> Fail(string message)
+            => new ResponseCenter<T>(isValid: false, message);
     }
 }

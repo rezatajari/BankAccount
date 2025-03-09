@@ -9,14 +9,14 @@ namespace BankAccount.Model
     public class Transaction
     {
         private static int _lastTxId = 100;
-        public Transaction(int customerId, string transactionName,double transactionPriceAmount,TypeOfTx transactionType)
+        public Transaction(int accountId, string transactionName,double transactionPriceAmount,TypeOfTx transactionType)
         {
-            Id = ++_lastTxId; // Auto increment Tx ID
+            Id = _lastTxId++; // Auto increment Tx ID
             TxPriceAmount = transactionPriceAmount;
             TxName = transactionName;
             DateOfTx = DateTime.UtcNow;
             TypeTx = transactionType;
-            CustomerId = customerId;
+            AccountId = accountId;
         }
 
 
@@ -25,7 +25,7 @@ namespace BankAccount.Model
         public double TxPriceAmount { get; set; }
         public TypeOfTx TypeTx { get;  set; }  // Private because we don't need to access customer to set type of own transaction 
         public DateTime DateOfTx { get; set; }
-        public int CustomerId { get; set; }
+        public int AccountId { get; set; }
        
     }
 

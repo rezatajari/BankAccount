@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BankAccount.Service;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -26,8 +27,8 @@ namespace BankAccount.Model
         public string Email { get; set; }
 
         // List of bank account of a customer like (saving - loan or others)
-        public List<Logic.BankService> Accounts { get; set; } = [];
+        public ICollection<BankService> Accounts { get; set; } = [];
 
-        public List<Transaction> Transactions { get; set; } = [];
+        public ICollection<Transaction> Transactions { get; set; } = [];
     }
 }

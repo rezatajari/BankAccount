@@ -6,34 +6,55 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BankAccount.Logic
+namespace BankAccount.Service
 {
     /// <summary>
     /// Represents a bank account. Manages account details and transactions.
     /// </summary>
     public class BankService
     {
-        private readonly CustomerService _customerService;
-        public BankService()
-        {
-            _customerService = new CustomerService();
-        }
+        private readonly CustomerService _customerService = new();
 
         public List<Customer> Customers { get; private set; } = [];
         public List<Account> Accounts { get; private set; } = [];
 
-        public ResponseCenter CreateNewAccount(Customer newCustomer)
+        public ResponseCenter<int> CreateNewAccount()
         {
-            Customers.Add(newCustomer);
+            // Create new customer
+            var newCustomer = CreateNewCustomer();
+
+            // Create new account
+            var accountId = CreateAccount(newCustomer);
+            return ResponseCenter<int>.Success(message: "Account created", data: accountId);
+        }
+
+
+        public ResponseCenter<Account> GetAccount(int accountId)
+        {
+            var account = Accounts.FirstOrDefault(a => a.Id == accountId);
+            return account == null ? ResponseCenter<Account>.Fail("Your account is not exist") : ResponseCenter<Account>.Success(data: account);
+        }
+
+
+        private int CreateAccount(Customer newCustomer)
+        {
             var newAccount = new Account(newCustomer.Id, newCustomer.Name, newCustomer.InitialBalance);
             Accounts.Add(newAccount);
-            return ResponseCenter.Success("Account created");
+            return newAccount.Id;
         }
-        public ResponseCenter Deposit(int customerId, double amountDeposit)
+
+        private Customer CreateNewCustomer()
         {
-            var account = Accounts.FirstOrDefault(c => c.CustomerId == customerId);
-            if (account==null)
-                return ResponseCenter.Fail("Account not found");
+            var customer = _customerService.CreateCustomerInformation();
+            Customers.Add(customer);
+            return customer;
+        }
+
+        public ResponseCenter<bool> Deposit(int accountId, double amountDeposit)
+        {
+            var account = Accounts.FirstOrDefault(a => a.Id == accountId);
+            if (account == null)
+                return ResponseCenter<bool>.Fail("Account not found");
 
             var amountValidation = AmountValidation.IsValidAmount(amountDeposit);
             if (!amountValidation.IsValid)
@@ -55,14 +76,14 @@ namespace BankAccount.Logic
                The Accounts list itself is not modified, but the object it contains is updated.
                */
             account.Balance += amountDeposit;
-            return ResponseCenter.Success($"Your deposit is successfully and you balance account now is: {account.Balance}");
+            return ResponseCenter<bool>.Success($"Your deposit is successfully and you balance account now is: {account.Balance}");
         }
 
-        public ResponseCenter Withdraw(int customerId,double amountWithdraw)
+        public ResponseCenter<bool> Withdraw(int accountId, double amountWithdraw)
         {
-            var account = Accounts.FirstOrDefault(c => c.CustomerId == customerId);
+            var account = Accounts.FirstOrDefault(a => a.Id == accountId);
             if (account == null)
-                return ResponseCenter.Fail("Account not found");
+                return ResponseCenter<bool>.Fail("Account not found");
 
             var amountValidation = AmountValidation.IsValidAmount(amountWithdraw);
             if (!amountValidation.IsValid)
@@ -71,20 +92,22 @@ namespace BankAccount.Logic
             if (account.Balance > amountWithdraw)
             {
                 account.Balance -= amountWithdraw;
-                return ResponseCenter.Success($"Your balance is now: {account.Balance}");
+                return ResponseCenter<bool>.Success($"Your balance is now: {account.Balance}");
             }
             else
             {
-                return ResponseCenter.Fail("Account balance is not enough.");
+                return ResponseCenter<bool>.Fail("Account balance is not enough.");
             }
         }
-        public ResponseCenter CheckBalance(int customerId)
+        public void CheckBalance(int accountId)
         {
-            var balance = Accounts.Where(c => c.CustomerId == customerId)
+            var balance = Accounts.Where(a => a.Id == accountId)
                 .Select(b => b.Balance)
                 .FirstOrDefault();
 
-            return ResponseCenter.Success($"Your balance is: {balance}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Your balance is: {balance}\n");
+            Console.ResetColor();
         }
     }
 }
