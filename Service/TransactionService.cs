@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace BankAccount.Service
 {
-    public class TransactionService(BankService bankService)
+    public class TransactionService
     {
+        private readonly BankService _bankService = new();
         public static List<Transaction> Transactions { get; private set; } = [];
 
         public void CreateNewTx(int accountId)
@@ -27,11 +28,11 @@ namespace BankAccount.Service
         {
             var result = tx.TypeTx switch
             {
-                TypeOfTx.Deposit => bankService.Deposit(tx.AccountId,tx.TxPriceAmount),
-                TypeOfTx.InputTransferFromOthers => bankService.Deposit(tx.AccountId, tx.TxPriceAmount),
-                TypeOfTx.BuySomething => bankService.Withdraw(tx.AccountId, tx.TxPriceAmount),
-                TypeOfTx.Withdraw => bankService.Withdraw(tx.AccountId, tx.TxPriceAmount),
-                TypeOfTx.OutputTransferToOthers => bankService.Withdraw(tx.AccountId, tx.TxPriceAmount),
+                TypeOfTx.Deposit => _bankService.Deposit(tx.AccountId,tx.TxPriceAmount),
+                TypeOfTx.InputTransferFromOthers => _bankService.Deposit(tx.AccountId, tx.TxPriceAmount),
+                TypeOfTx.BuySomething => _bankService.Withdraw(tx.AccountId, tx.TxPriceAmount),
+                TypeOfTx.Withdraw => _bankService.Withdraw(tx.AccountId, tx.TxPriceAmount),
+                TypeOfTx.OutputTransferToOthers => _bankService.Withdraw(tx.AccountId, tx.TxPriceAmount),
                 _ => ResponseCenter<bool>.Fail("We should be regular transaction")
             };
 
@@ -44,9 +45,9 @@ namespace BankAccount.Service
             return result;
         }
 
-        public List<Transaction> GetTransactions()
+        public List<Transaction> GetTransactions(int accountId)
         {
-            return Transactions;
+            return Transactions.Where(i => i.AccountId == accountId).ToList();
         }
 
     }
