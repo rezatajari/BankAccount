@@ -7,6 +7,10 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BankAccount
 {
+    /// <summary>
+    /// A general response entire all of an application for better to friendly response 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ResponseCenter<T>
     {
         public bool IsValid { get; private set; }

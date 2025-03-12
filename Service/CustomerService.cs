@@ -11,11 +11,13 @@ namespace BankAccount.Service
     {
         public Customer CreateCustomerInformation()
         {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine("Please enter your information:\n");
+            Console.ResetColor();
             var name = GetCustomerName();
             var email = GetCustomerEmail();
             var initBalance = GetCustomerInitBalance();
-            return new Customer(name, email,initBalance);
+            return new Customer(name, email, initBalance);
         }
 
         private static double GetCustomerInitBalance()
@@ -29,7 +31,11 @@ namespace BankAccount.Service
                 if (double.TryParse(Console.ReadLine(), out initBalance))
                     isValid = true;
                 else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Please enter correct balance\n");
+                    Console.ResetColor();
+                }
 
             } while (!isValid);
 
