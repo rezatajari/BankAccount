@@ -13,7 +13,13 @@ namespace BankAccount.Service
     /// </summary>
     public class BankService
     {
+        #region PrivateMember
+
         private readonly CustomerService _customerService = new();
+
+        #endregion
+
+        #region Members
 
         /// <summary>
         /// List of customers in bank
@@ -28,6 +34,10 @@ namespace BankAccount.Service
         /// </summary>
         public List<Transaction> Transactions { get; private set; } = [];
 
+        #endregion
+
+        #region AccountMethods
+
         /// <summary>
         /// Initial to create new account
         /// </summary>
@@ -41,6 +51,7 @@ namespace BankAccount.Service
             var accountId = CreateAccount(newCustomer);
             return ResponseCenter<int>.Success(message: "Account created", data: accountId);
         }
+
         /// <summary>
         /// Get account from bank
         /// </summary>
@@ -51,6 +62,7 @@ namespace BankAccount.Service
             var account = Accounts.FirstOrDefault(a => a.Id == accountId);
             return account == null ? ResponseCenter<Account>.Fail("Your account is not exist") : ResponseCenter<Account>.Success(data: account);
         }
+
         /// <summary>
         /// Create new account for a customer
         /// </summary>
@@ -62,16 +74,26 @@ namespace BankAccount.Service
             Accounts.Add(newAccount);
             return newAccount.Id;
         }
+
         /// <summary>
-        /// Create new customer information for bank
+        /// Check balance of customer in own account
         /// </summary>
-        /// <returns></returns>
-        private Customer CreateNewCustomer()
+        /// <param name="accountId"></param>
+        public void CheckBalance(int accountId)
         {
-            var customer = _customerService.CreateCustomerInformation();
-            Customers.Add(customer);
-            return customer;
+            var balance = Accounts.Where(a => a.Id == accountId)
+                .Select(b => b.Balance)
+                .FirstOrDefault();
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Your balance is: {balance}\n");
+            Console.ResetColor();
         }
+    
+        #endregion
+
+        #region Deposit&WithdrawMethods
+
         /// <summary>
         /// Deposit of bank account of a customer 
         /// </summary>
@@ -128,20 +150,10 @@ namespace BankAccount.Service
                 return ResponseCenter<bool>.Fail("Account balance is not enough.");
             }
         }
-        /// <summary>
-        /// Check balance of customer in own account
-        /// </summary>
-        /// <param name="accountId"></param>
-        public void CheckBalance(int accountId)
-        {
-            var balance = Accounts.Where(a => a.Id == accountId)
-                .Select(b => b.Balance)
-                .FirstOrDefault();
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"Your balance is: {balance}\n");
-            Console.ResetColor();
-        }
+        #endregion
+
+        #region TransactionMethods
 
         /// <summary>
         /// Add transaction to list of transaction of a customer in bank
@@ -177,5 +189,22 @@ namespace BankAccount.Service
         {
             return Transactions.Where(i => i.AccountId == accountId).ToList();
         }
+
+        #endregion
+
+        #region CustomerMethod
+
+        /// <summary>
+        /// Create new customer information for bank
+        /// </summary>
+        /// <returns></returns>
+        private Customer CreateNewCustomer()
+        {
+            var customer = _customerService.CreateCustomerInformation();
+            Customers.Add(customer);
+            return customer;
+        }
+
+        #endregion
     }
 }
